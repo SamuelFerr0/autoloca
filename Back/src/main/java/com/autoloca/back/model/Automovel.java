@@ -1,6 +1,9 @@
 package com.autoloca.back.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "automovel")
@@ -82,6 +85,26 @@ public class Automovel {
   public void setDiaria(java.math.BigDecimal diaria) {
     this.diaria = diaria;
   }
+
+  @JsonIgnore
+  @JdbcTypeCode(SqlTypes.VARBINARY)
+  @Column(length = 3145728)
+  private byte[] foto;
+
+  @JsonIgnore
+  private String fotoTipo;
+
+  @JsonIgnore
+  public byte[] getFoto() { return foto; }
+
+  public void setFoto(byte[] foto) { this.foto = foto; }
+
+  @JsonIgnore
+  public String getFotoTipo() { return fotoTipo; }
+
+  public void setFotoTipo(String fotoTipo) { this.fotoTipo = fotoTipo; }
+
+  public boolean isTemFoto() { return foto != null && foto.length > 0; }
 
   @ManyToOne(optional = false)
   @JoinColumn(nullable = false)

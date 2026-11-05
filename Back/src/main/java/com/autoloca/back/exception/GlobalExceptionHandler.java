@@ -49,6 +49,11 @@ public class GlobalExceptionHandler {
         "Usuário, CPF, placa ou matrícula já cadastrado, ou registro vinculado a outro cadastro.");
   }
 
+  @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+  ResponseEntity<?> fotoGrande() {
+    return erro(413, "A foto deve ter no máximo 3 MB.");
+  }
+
   private ResponseEntity<?> erro(int status, String mensagem) {
     return ResponseEntity.status(status).body(Map.of("mensagem", mensagem));
   }
