@@ -7,7 +7,7 @@ import Frota from "./pages/Frota";
 import Pedidos from "./pages/Pedidos";
 import Clientes from "./pages/Clientes";
 import Contratos from "./pages/Contratos";
-import Design from "./design/Design";
+import DesignSystem from "./pages/DesignSystem";
 function Conteudo() {
   const { usuario, carregando } = useAuth();
   if (carregando) return <div className="app-loading">Carregando AutoLoca…</div>;
@@ -29,7 +29,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/design" element={<Design />} />
+        <Route path="/design" element={<DesignSystem />} />
         <Route
           path="*"
           element={

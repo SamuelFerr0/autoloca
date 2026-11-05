@@ -1,0 +1,35 @@
+.design-system section {
+  margin-bottom: 24px;
+}
+.design-paleta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.design-amostra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  margin-bottom: 12px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-campo);
+}
+.design-paleta p {
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.design-tipo {
+  padding: 16px 0;
+  border-top: 1px solid var(--borda);
+}
+.design-exemplos {
+  display: grid;
+  gap: 24px;
+}
+.design-exemplos .table-actions {
+  flex-wrap: wrap;
+}
+.design-exemplos .field {
+  max-width: 420px;
+}
