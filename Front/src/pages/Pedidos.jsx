@@ -1,3 +1,5 @@
+import FotoCarro from "../components/FotoCarro";
+import "./Frota.css";
 import { useAcao } from "../hooks/useAcao";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -63,6 +65,9 @@ export default function Pedidos() {
                 <div className="order-head">
                   <span className="eyebrow">PEDIDO #{String(p.id).padStart(4, "0")}</span>
                   <span className={`badge ${p.status}`}>{statusNome[p.status]}</span>
+                </div>
+                <div className="pedido-foto">
+                  <FotoCarro carro={p.automovel} />
                 </div>
                 <div className="order-main">
                   <div>

@@ -1,3 +1,5 @@
+import FotoCarro from "../components/FotoCarro";
+import "./Frota.css";
 import { Printer } from "lucide-react";
 import { useDados } from "../hooks/useDados";
 import { Message, Empty } from "../components/UI";
@@ -29,6 +31,9 @@ export default function Contratos() {
             <article className="panel contract-card" key={c.id}>
               <div className="section-heading">
                 <span className="badge CONTRATADO">Formalizado</span>
+              </div>
+              <div className="pedido-foto">
+                <FotoCarro carro={c.pedido.automovel} />
               </div>
               <span className="eyebrow">CONTRATO #{String(c.id).padStart(4, "0")}</span>
               <h2>

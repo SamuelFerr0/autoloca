@@ -1,3 +1,4 @@
+import { House, CarFront, ClipboardList, FileText, Users } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAcao } from "../hooks/useAcao";
 import { useAuth } from "../hooks/useAuth";
@@ -8,11 +9,11 @@ export default function Layout() {
   const { busy, erro, executar } = useAcao();
   const cliente = usuario.perfil === "CLIENTE";
   const links = [
-    ["/", "Início"],
-    ["/frota", "Frota"],
-    ["/pedidos", cliente ? "Meus pedidos" : "Pedidos"],
-    ["/contratos", "Contratos"],
-    ["/clientes", cliente ? "Meu cadastro" : "Clientes"],
+    ["/", "Início", House],
+    ["/frota", "Frota", CarFront],
+    ["/pedidos", cliente ? "Meus pedidos" : "Pedidos", ClipboardList],
+    ["/contratos", "Contratos", FileText],
+    ["/clientes", cliente ? "Meu cadastro" : "Clientes", Users],
   ];
   const perfis = { CLIENTE: "Cliente", EMPRESA: "Empresa", BANCO: "Banco" };
 
@@ -33,8 +34,9 @@ export default function Layout() {
         </div>
       </header>
       <nav className="main-nav" aria-label="Menu principal">
-        {links.map(([to, label]) => (
+        {links.map(([to, label, Icon]) => (
           <NavLink key={to} to={to} end={to === "/"}>
+            <Icon size={17} aria-hidden="true" />
             {label}
           </NavLink>
         ))}
@@ -44,7 +46,28 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer>
-        AutoLoca · Sistema de aluguel de carros · <NavLink to="/design">Design system</NavLink>
+        <div className="grid gap-8 md:grid-cols-3">
+          <div>
+            <strong className="text-2xl">AutoLoca</strong>
+            <p className="mt-3">Um carro para cada caminho.</p>
+          </div>
+          <div>
+            <strong>Seu aluguel</strong>
+            <div className="mt-3 flex flex-col gap-2">
+              <NavLink to="/frota">Conhecer a frota</NavLink>
+              <NavLink to="/pedidos">Acompanhar pedidos</NavLink>
+              <NavLink to="/contratos">Consultar contratos</NavLink>
+            </div>
+          </div>
+          <div>
+            <strong>Sobre o projeto</strong>
+            <div className="mt-3 flex flex-col gap-2">
+              <NavLink to="/design">Design system</NavLink>
+              <a href="/carros/creditos.html">Créditos das imagens</a>
+              <span>Projeto acadêmico · DIAW</span>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );
