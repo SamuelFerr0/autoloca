@@ -49,7 +49,11 @@ public class SecurityConfig {
     return http.cors(c -> {})
         .authorizeHttpRequests(
             a ->
-                a.requestMatchers("/api/auth/csrf", "/api/auth/login", "/api/auth/cadastro")
+                a.requestMatchers(
+                        "/api/auth/csrf",
+                        "/api/auth/login",
+                        "/api/auth/cadastro",
+                        "/api/auth/cadastro/agente")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

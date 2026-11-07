@@ -30,6 +30,16 @@ public final class Dados {
       @NotBlank @Size(min = 8, max = 72) String senha,
       @NotNull @Valid PerfilCliente cliente) {}
 
+  public record CadastroAgente(
+      @NotBlank
+          @Pattern(
+              regexp = "[a-zA-Z0-9._-]{3,80}",
+              message = "Usuário: use de 3 a 80 letras, números, pontos ou traços")
+          String username,
+      @NotBlank @Size(min = 8, max = 72) String senha,
+      @NotBlank @Size(max = 150) String nome,
+      @NotNull com.autoloca.back.model.Perfil perfil) {}
+
   public record NovoPedido(
       @NotNull Long automovelId,
       @NotNull @FutureOrPresent LocalDate inicio,

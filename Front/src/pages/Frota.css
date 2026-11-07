@@ -1,0 +1,61 @@
+.carro-card {
+  overflow: hidden;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-campo);
+  border-bottom: 3px solid var(--verde);
+}
+.carro-foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 235px;
+  background: var(--fundo-detalhe);
+  color: var(--texto-apoio);
+}
+.carro-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.carro-dados {
+  padding: 20px;
+}
+.carro-dados h2 {
+  margin: 0 0 16px;
+}
+.carro-dados dl {
+  margin: 0;
+}
+.carro-dados dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0;
+}
+.carro-dados dt,
+.fotos-aviso {
+  color: var(--texto-apoio);
+}
+.carro-dados dd {
+  margin: 0;
+}
+.carro-diaria strong {
+  font-size: var(--titulo-secao);
+}
+.fotos-aviso {
+  font-size: var(--texto-pequeno);
+  margin-top: 20px;
+}
+
+.carro-card .table-actions {
+  justify-content: space-between;
+}
+.carro-card .table-actions .button {
+  width: 100%;
+}
+.carro-diaria {
+  padding-top: 16px;
+  border-top: 1px solid var(--borda);
+  margin-top: 16px;
+}

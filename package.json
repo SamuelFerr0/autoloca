@@ -1,0 +1,11 @@
+{
+  "name": "autoloca",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix Front ci && npm --prefix Front run dev:all:windows",
+    "start:unix": "npm --prefix Front ci && npm --prefix Front run dev:all"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

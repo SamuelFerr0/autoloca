@@ -8,10 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "oxlint src",
-    "back": "cd ../Back && ./mvnw spring-boot:run",
+    "back": "cd ../Back && sh ./mvnw spring-boot:run",
     "back:windows": "cd ../Back && mvnw.cmd spring-boot:run",
-    "dev:all": "concurrently --names BACK,FRONT --prefix-colors blue,green \"npm run back\" \"npm run dev\"",
-    "dev:all:windows": "concurrently \"npm run back:windows\" \"npm run dev\"",
+    "dev:all": "concurrently --kill-others --names BACK,FRONT --prefix-colors blue,green \"npm run back\" \"npm run dev\"",
+    "dev:all:windows": "concurrently --kill-others \"npm run back:windows\" \"npm run dev\"",
     "format": "prettier --write src vite.config.js"
   },
   "dependencies": {

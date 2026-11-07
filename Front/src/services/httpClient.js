@@ -12,9 +12,12 @@ export async function requisicao(path, { method = "GET", body, form = false } = 
       if (!csrf) await renovarCsrf();
       headers[csrf.headerName] = csrf.token;
     }
-    if (body) headers["Content-Type"] = form ? "application/x-www-form-urlencoded" : "application/json";
+    const multipart = body instanceof FormData;
+    if (body && !multipart)
+      headers["Content-Type"] = form ? "application/x-www-form-urlencoded" : "application/json";
     const options = { method, headers, credentials: "include" };
-    if (body && method !== "GET") options.body = form ? new URLSearchParams(body) : JSON.stringify(body);
+    if (body && method !== "GET")
+      options.body = multipart ? body : form ? new URLSearchParams(body) : JSON.stringify(body);
     const response = await fetch(`${API_URL}/api${path}`, options);
     const data = response.status === 204 ? null : await response.json().catch(() => null);
     if (!response.ok) {

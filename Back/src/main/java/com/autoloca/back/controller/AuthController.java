@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
   private final ClienteService clienteService;
   private final UsuarioService usuarioService;
+  private final AgenteService agenteService;
 
-  public AuthController(ClienteService clienteService, UsuarioService usuarioService) {
+  public AuthController(
+      ClienteService clienteService, UsuarioService usuarioService, AgenteService agenteService) {
     this.clienteService = clienteService;
     this.usuarioService = usuarioService;
+    this.agenteService = agenteService;
   }
 
   @GetMapping("/csrf")
@@ -29,6 +32,12 @@ public class AuthController {
   @ResponseStatus(HttpStatus.CREATED)
   public Cliente cadastrar(@Valid @RequestBody Dados.Cadastro dados) {
     return clienteService.cadastrar(dados);
+  }
+
+  @PostMapping("/cadastro/agente")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Usuario cadastrarAgente(@Valid @RequestBody Dados.CadastroAgente dados) {
+    return agenteService.cadastrar(dados);
   }
 
   @GetMapping("/me")

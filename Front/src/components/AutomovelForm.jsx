@@ -1,11 +1,26 @@
 import { useDados } from "../hooks/useDados";
 import { useAcao } from "../hooks/useAcao";
 import { Campo, Submit, Message } from "./UI";
-import { salvar } from "../services/aluguelService";
+import { useState, useEffect } from "react";
+import FotoCarro from "./FotoCarro";
+import { salvarAutomovel } from "../services/aluguelService";
 
 export default function AutomovelForm({ carro, onSalvo }) {
   const { dados: usuarios, erro: erroDados } = useDados("automoveis/proprietarios");
   const { busy, erro, executar } = useAcao();
+
+  const [foto, setFoto] = useState(null);
+  const [preview, setPreview] = useState("");
+  const [erroFoto, setErroFoto] = useState("");
+  useEffect(() => {
+    if (!foto) {
+      setPreview("");
+      return;
+    }
+    const url = URL.createObjectURL(foto);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [foto]);
 
   async function handleSalvar(evento) {
     evento.preventDefault();
@@ -20,14 +35,46 @@ export default function AutomovelForm({ carro, onSalvo }) {
       proprietarioId: Number(formulario.get("proprietarioId")),
     };
     await executar(async () => {
-      await salvar("automoveis", carro?.id, dados);
+      await salvarAutomovel(carro?.id, dados, foto);
       onSalvo();
     });
   }
 
   return (
     <form className="form" onSubmit={handleSalvar}>
-      <Message erro={erro || erroDados} />
+      <Message erro={erroFoto || erro || erroDados} />
+      <div className="foto-upload">
+        {preview ? (
+          <img src={preview} alt="Prévia da foto selecionada" />
+        ) : carro ? (
+          <FotoCarro carro={carro} />
+        ) : (
+          <p>Adicione uma foto do automóvel</p>
+        )}
+        <Campo
+          label="Foto do automóvel"
+          type="file"
+          accept="image/jpeg,image/png"
+          onChange={(e) => {
+            const arquivo = e.target.files[0];
+            setErroFoto("");
+            if (
+              arquivo &&
+              (!["image/jpeg", "image/png"].includes(arquivo.type) || arquivo.size > 3 * 1024 * 1024)
+            ) {
+              setErroFoto("Selecione uma foto JPG ou PNG de até 3 MB.");
+              e.target.value = "";
+              setFoto(null);
+              return;
+            }
+            setFoto(arquivo || null);
+          }}
+        />
+        <small>
+          JPG ou PNG, até 3 MB e 6000 pixels por lado. Ao editar, a foto atual é mantida se nenhum arquivo for
+          escolhido.
+        </small>
+      </div>
       <div className="form-grid">
         <Campo label="Marca" name="marca" defaultValue={carro?.marca} maxLength={80} required />
         <Campo label="Modelo" name="modelo" defaultValue={carro?.modelo} maxLength={100} required />

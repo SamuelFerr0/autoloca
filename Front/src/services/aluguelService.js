@@ -26,3 +26,13 @@ export function avaliarPedido(id, dados) {
 export function contratarPedido(id, dados) {
   return requisicao(`/contratos/pedido/${id}`, { method: "POST", body: dados });
 }
+
+export function salvarAutomovel(id, dados, foto) {
+  const formulario = new FormData();
+  formulario.append("dados", new Blob([JSON.stringify(dados)], { type: "application/json" }));
+  if (foto) formulario.append("foto", foto);
+  return requisicao(id ? `/automoveis/${id}` : "/automoveis", {
+    method: id ? "PUT" : "POST",
+    body: formulario,
+  });
+}
