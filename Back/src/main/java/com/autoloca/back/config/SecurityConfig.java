@@ -51,6 +51,7 @@ public class SecurityConfig {
             a ->
                 a.requestMatchers(
                         "/api/auth/csrf",
+                        "/api/fotos",
                         "/api/auth/login",
                         "/api/auth/cadastro",
                         "/api/auth/cadastro/agente")

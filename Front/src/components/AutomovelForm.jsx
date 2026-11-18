@@ -1,4 +1,4 @@
-import { useDados } from "../hooks/useDados";
+import { useAuth } from "../hooks/useAuth";
 import { useAcao } from "../hooks/useAcao";
 import { Campo, Submit, Message } from "./UI";
 import { useState, useEffect } from "react";
@@ -6,7 +6,7 @@ import FotoCarro from "./FotoCarro";
 import { salvarAutomovel } from "../services/aluguelService";
 
 export default function AutomovelForm({ carro, onSalvo }) {
-  const { dados: usuarios, erro: erroDados } = useDados("automoveis/proprietarios");
+  const { usuario } = useAuth();
   const { busy, erro, executar } = useAcao();
 
   const [foto, setFoto] = useState(null);
@@ -32,7 +32,6 @@ export default function AutomovelForm({ carro, onSalvo }) {
       placa: formulario.get("placa"),
       ano: Number(formulario.get("ano")),
       diaria: Number(formulario.get("diaria")),
-      proprietarioId: Number(formulario.get("proprietarioId")),
     };
     await executar(async () => {
       await salvarAutomovel(carro?.id, dados, foto);
@@ -42,7 +41,7 @@ export default function AutomovelForm({ carro, onSalvo }) {
 
   return (
     <form className="form" onSubmit={handleSalvar}>
-      <Message erro={erroFoto || erro || erroDados} />
+      <Message erro={erroFoto || erro} />
       <div className="foto-upload">
         {preview ? (
           <img src={preview} alt="Prévia da foto selecionada" />
@@ -107,19 +106,13 @@ export default function AutomovelForm({ carro, onSalvo }) {
           required
         />
       </div>
-      <label className="field">
-        Proprietário
-        <select name="proprietarioId" defaultValue={carro?.proprietario.id || ""} required>
-          <option value="" disabled>
-            Selecione
-          </option>
-          {usuarios.map((usuario) => (
-            <option key={usuario.id} value={usuario.id}>
-              {usuario.nome} ({usuario.perfil})
-            </option>
-          ))}
-        </select>
-      </label>
+      <div className="detail-box">
+        <strong>Anunciante: {usuario.nome}</strong>
+        <p>
+          Este anúncio fica vinculado à sua conta. Sem foto enviada, tentamos buscar uma foto ilustrativa do
+          modelo.
+        </p>
+      </div>
       <Submit busy={busy}>Salvar automóvel</Submit>
     </form>
   );

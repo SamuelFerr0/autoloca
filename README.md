@@ -34,18 +34,20 @@ Projeto desenvolvido para o Laboratório 02 de Desenvolvimento e Integração de
 ## ✨ Funcionalidades Principais
 
 - Cadastro e login de clientes, empresas e bancos.
-- CRUD de clientes, com identificação, profissão e até três rendimentos.
-- Cadastro de automóveis com foto, diária e proprietário.
+- Cadastro do cliente com identificação, profissão e até três rendimentos; agentes consultam clientes vinculados aos próprios pedidos.
+- Anúncios vinculados automaticamente à empresa ou ao banco autenticado, com diária e foto enviada ou ilustrativa da Wikimedia.
 - Criação, consulta, alteração e cancelamento de pedidos.
 - Avaliação financeira e registro de parecer pelos agentes.
-- Formalização de contratos e concessão opcional de crédito.
+- Solicitação de crédito pelo cliente em anúncios de bancos, com valor e parcelas aprovados pelo banco anunciante.
+- Contratos preenchidos automaticamente, com cláusulas, dados fixos e PDF para leitura e assinatura.
+- Página pública com Sobre e dúvidas frequentes antes do login.
 
 ## 🛠 Tecnologias Utilizadas
 
 | Parte | Tecnologias |
 | --- | --- |
 | Front-end | React, Vite, React Router, Tailwind CSS e Lucide |
-| Back-end | Java 25, Spring Boot 4.0.2, Maven, Spring MVC, Spring Data JPA e Spring Security |
+| Back-end | Java 25, Spring Boot 4.0.2, Maven, Spring MVC, Spring Data JPA, Spring Security e PDFBox |
 | Banco de dados | Supabase/PostgreSQL; H2 para demonstração local |
 | Testes | JUnit Jupiter, Mockito e MockMvc |
 | Infraestrutura | Docker para o backend e GitHub Actions para testes e build |
@@ -57,7 +59,7 @@ A aplicação segue MVC com frontend React e API Spring Boot. Os controllers rec
 | Modelo | Imagens |
 | --- | --- |
 | Casos de uso | [Clientes](docs/modelagem/casos-clientes.png) · [Agentes](docs/modelagem/casos-agentes.png) |
-| Classes | [Pedidos e contratos](docs/modelagem/classes-aluguel.png) · [Contas e propriedade](docs/modelagem/classes-contas.png) |
+| Classes | [UML completa](docs/modelagem/classes-completo.png) · [PDF](docs/modelagem/classes-completo.pdf) |
 | Pacotes | [Visão lógica](docs/modelagem/pacotes.png) |
 | Histórias do usuário | [HU01–HU08](docs/modelagem/historias-1.png) · [HU09–HU16](docs/modelagem/historias-2.png) |
 
@@ -85,9 +87,15 @@ Não versione o `.env`. No frontend, `VITE_API_URL` pode ficar vazio para execu�
 
 ### Inicialização do Banco de Dados (PostgreSQL)
 
-Execute [database/01-schema.sql](database/01-schema.sql) no SQL Editor de um banco vazio no Supabase. Para atualizar um banco da versão anterior sem fotos, execute [database/02-foto-automovel.sql](database/02-foto-automovel.sql).
+Em um banco vazio, execute [database/01-schema.sql](database/01-schema.sql) no SQL Editor do Supabase.
+
+Se o banco já existe, execute [database/02-foto-automovel.sql](database/02-foto-automovel.sql), se ainda não aplicou a atualização de fotos, e depois [database/03-anuncios-credito-contratos.sql](database/03-anuncios-credito-contratos.sql), antes de iniciar o backend atualizado. Esses scripts acrescentam os campos sem apagar os registros.
+
+Após entrar como agente, complete CNPJ, endereço e representante em **Minha empresa** ou **Meu banco**. Esses dados são necessários para emitir contratos. Nos veículos antigos já registrados em nome de clientes, confira o anunciante recuperado do último agente avaliador. Contratos anteriores são consolidados uma vez com os dados disponíveis e identificados como registros anteriores; os contratos novos guardam texto e PDF no momento da emissão.
 
 As contas e os carros devem ser cadastrados pela interface. O backend valida o esquema do Supabase, sem criar as tabelas automaticamente.
+
+Fotos enviadas e PDFs ficam no próprio PostgreSQL (campos `bytea`), sem bucket do Supabase Storage. As imagens ilustrativas são consultadas nas APIs da Wikipédia/Wikimedia Commons, com autor e licença exibidos. Sem resposta da API, os modelos de demonstração usam as imagens locais; para outros modelos, envie uma foto no cadastro.
 
 ### Como Executar a Aplicação
 
@@ -105,7 +113,7 @@ npm run start:unix
 
 Os comandos instalam as dependências e iniciam frontend e backend. Acesse **http://localhost:5173**. A API utiliza a porta **8080**. Encerre com **Ctrl+C**.
 
-Sem `Back/.env`, o perfil local utiliza H2 em arquivo, com seis carros e as contas abaixo. Esses dados não são criados no Supabase.
+Sem `Back/.env`, o perfil local utiliza H2 em arquivo, com seis carros e as contas abaixo. Quatro carros são da empresa e dois do banco. Os CNPJs e os dados do agente local são fictícios. Esses dados não são criados no Supabase.
 
 | Perfil | Usuário | Senha |
 | --- | --- | --- |
@@ -163,7 +171,7 @@ Os testes do backend usam JUnit Jupiter, Mockito e MockMvc. Execute dentro de `B
 ./mvnw test
 ```
 
-No PowerShell, use `./mvnw.cmd test`. A suíte possui 43 testes em oito classes, com dependências simuladas, sem iniciar o banco.
+No PowerShell, use `./mvnw.cmd test`. A suíte possui 55 testes: 52 com Mockito/MockMvc e três de integração com H2 em memória. Verificam permissões do anunciante, crédito aprovado pelo banco, indisponibilidade de datas, fotos e preservação do texto e PDF após alterações cadastrais.
 
 Para conferir o frontend, execute dentro de `Front`:
 
@@ -180,6 +188,7 @@ npm run build
 - [Spring Boot](https://docs.spring.io/spring-boot/)
 - [React](https://react.dev/) e [Vite](https://vite.dev/)
 - [Supabase](https://supabase.com/docs)
+- [Wikimedia API](https://www.mediawiki.org/wiki/API:Main_page) e [PDFBox](https://pdfbox.apache.org/)
 - [Tailwind CSS](https://tailwindcss.com/docs) e [Docker](https://docs.docker.com/)
 
 ## 👥 Autores

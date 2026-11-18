@@ -1,15 +1,15 @@
 package com.autoloca.back.controller;
 
-import com.autoloca.back.service.AutomovelService;
 import com.autoloca.back.dto.Dados;
 import com.autoloca.back.model.*;
+import com.autoloca.back.service.AutomovelService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/automoveis")

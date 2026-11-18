@@ -94,6 +94,19 @@ export default function Pedidos() {
                     <strong>{moeda(p.valorTotal)}</strong>
                   </div>
                 </div>
+                {p.solicitaCredito && (
+                  <div className="credit-box">
+                    <strong>Crédito solicitado ao banco anunciante</strong>
+                    <p>
+                      {moeda(p.valorCreditoSolicitado)} em {p.parcelasSolicitadas} parcelas.
+                    </p>
+                    {p.valorCreditoAprovado != null && (
+                      <p>
+                        Aprovado: {moeda(p.valorCreditoAprovado)} em {p.parcelasAprovadas} parcelas.
+                      </p>
+                    )}
+                  </div>
+                )}
                 {p.parecer && (
                   <div className="opinion">
                     <strong>Parecer de {p.agente?.nome}</strong>

@@ -36,7 +36,7 @@ export default function Frota() {
       <div className="page-heading">
         <div>
           <span className="hero-kicker">Encontre seu próximo caminho</span>
-          <h1>Frota</h1>
+          <h1>{agente ? "Meus anúncios" : "Encontre seu carro"}</h1>
           <p>Consulte os automóveis e o valor das diárias.</p>
         </div>
         {agente && (
@@ -99,6 +99,12 @@ export default function Frota() {
                     <dd>{carro.matricula}</dd>
                   </div>
                 </dl>
+                <p className="muted small-text">
+                  Anunciado por {carro.anunciante?.nome || "Agente não informado"}
+                </p>
+                {carro.anunciante?.perfil === "BANCO" && (
+                  <span className="badge APROVADO">Crédito sujeito à aprovação do banco</span>
+                )}
                 <p className="carro-diaria">
                   <strong>{moeda(carro.diaria)}</strong> / dia
                 </p>
@@ -133,7 +139,8 @@ export default function Frota() {
         </div>
       )}
       <p className="fotos-aviso">
-        Os veículos de demonstração usam fotos ilustrativas. Nos demais, é exibida a foto enviada no cadastro.{" "}
+        A foto enviada pelo anunciante tem prioridade. Sem ela, buscamos uma foto ilustrativa do modelo na
+        Wikimedia; os carros de demonstração também têm imagens locais.{" "}
         <a href="/carros/creditos.html" target="_blank" rel="noreferrer">
           Créditos das fotos
         </a>

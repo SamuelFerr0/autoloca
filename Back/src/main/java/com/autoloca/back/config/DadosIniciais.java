@@ -48,10 +48,16 @@ public class DadosIniciais implements CommandLineRunner {
     }
 
     Usuario empresa = criarUsuario("empresa", "Empresa123!", "AutoLoca Locadora", Perfil.EMPRESA);
-    criarUsuario("banco", "Banco123!", "Banco Horizonte", Perfil.BANCO);
+    Usuario banco = criarUsuario("banco", "Banco123!", "Banco Horizonte", Perfil.BANCO);
     Usuario usuarioCliente = criarUsuario("cliente", "Cliente123!", "Marina Alves", Perfil.CLIENTE);
     criarClienteLocal(usuarioCliente);
-    criarFrotaLocal(empresa);
+    for (Usuario u : java.util.List.of(empresa, banco))
+      if (u.getCnpj() == null) {
+        u.setCnpj(u == empresa ? "00000000000100" : "00000000000200");
+        u.setEnderecoEmpresa("Avenida de demonstração, 100, Belo Horizonte - MG");
+        u.setRepresentante("Representante de demonstração");
+      }
+    criarFrotaLocal(empresa, banco);
   }
 
   private void criarClienteLocal(Usuario usuario) {
@@ -68,7 +74,7 @@ public class DadosIniciais implements CommandLineRunner {
     clienteRepository.save(cliente);
   }
 
-  private void criarFrotaLocal(Usuario empresa) {
+  private void criarFrotaLocal(Usuario empresa, Usuario banco) {
     if (automovelRepository.count() > 0) {
       return;
     }
@@ -89,7 +95,9 @@ public class DadosIniciais implements CommandLineRunner {
       automovel.setModelo(dados[1]);
       automovel.setDiaria(new BigDecimal(dados[2]));
       automovel.setPlaca(dados[3]);
-      automovel.setProprietario(empresa);
+      Usuario anunciante = indice >= 4 ? banco : empresa;
+      automovel.setProprietario(anunciante);
+      automovel.setAnunciante(anunciante);
       automovelRepository.save(automovel);
     }
   }

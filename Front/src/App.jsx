@@ -7,6 +7,7 @@ import Frota from "./pages/Frota";
 import Pedidos from "./pages/Pedidos";
 import Clientes from "./pages/Clientes";
 import Contratos from "./pages/Contratos";
+import PerfilAgente from "./pages/PerfilAgente";
 import DesignSystem from "./pages/DesignSystem";
 function Conteudo() {
   const { usuario, carregando } = useAuth();
@@ -19,6 +20,7 @@ function Conteudo() {
         <Route path="frota" element={<Frota />} />
         <Route path="pedidos" element={<Pedidos />} />
         <Route path="clientes" element={<Clientes />} />
+        <Route path="empresa" element={<PerfilAgente />} />
         <Route path="contratos" element={<Contratos />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

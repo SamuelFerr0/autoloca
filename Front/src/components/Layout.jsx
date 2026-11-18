@@ -10,11 +10,12 @@ export default function Layout() {
   const cliente = usuario.perfil === "CLIENTE";
   const links = [
     ["/", "Início", House],
-    ["/frota", "Frota", CarFront],
+    ["/frota", cliente ? "Frota" : "Meus anúncios", CarFront],
     ["/pedidos", cliente ? "Meus pedidos" : "Pedidos", ClipboardList],
     ["/contratos", "Contratos", FileText],
     ["/clientes", cliente ? "Meu cadastro" : "Clientes", Users],
   ];
+  if (!cliente) links.push(["/empresa", usuario.perfil === "BANCO" ? "Meu banco" : "Minha empresa", Users]);
   const perfis = { CLIENTE: "Cliente", EMPRESA: "Empresa", BANCO: "Banco" };
 
   return (

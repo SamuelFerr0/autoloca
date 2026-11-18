@@ -33,6 +33,9 @@ public class AgenteService {
     usuario.setSenha(passwordEncoder.encode(dados.senha()));
     usuario.setNome(dados.nome().trim());
     usuario.setPerfil(dados.perfil());
+    usuario.setCnpj(dados.cnpj());
+    usuario.setEnderecoEmpresa(dados.enderecoEmpresa());
+    usuario.setRepresentante(dados.representante());
     return usuarioRepository.save(usuario);
   }
 }

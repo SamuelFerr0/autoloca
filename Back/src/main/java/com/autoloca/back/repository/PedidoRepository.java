@@ -11,6 +11,20 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
   boolean existsByClienteId(Long id);
 
   @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+  @org.springframework.data.jpa.repository.Query(
+      "select p from Pedido p where p.cliente.id = :cliente and p.status ="
+          + " com.autoloca.back.model.StatusPedido.APROVADO")
+  java.util.List<Pedido> buscarAprovadosDoCliente(
+      @org.springframework.data.repository.query.Param("cliente") Long cliente);
+
+  java.util.Optional<Pedido> findFirstByAutomovelIdAndAgenteIsNotNullOrderByIdDesc(
+      Long automovelId);
+
+  java.util.List<Pedido> findByAutomovelAnuncianteIdOrderByIdDesc(Long id);
+
+  boolean existsByClienteIdAndAutomovelAnuncianteId(Long clienteId, Long anuncianteId);
+
+  @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
   @org.springframework.data.jpa.repository.Query("select p from Pedido p where p.id = :id")
   java.util.Optional<Pedido> buscarComBloqueio(
       @org.springframework.data.repository.query.Param("id") Long id);

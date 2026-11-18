@@ -34,10 +34,22 @@ public class UsuarioService {
     }
   }
 
-  public void exigirDonoOuAgente(Long usuarioId) {
-    Usuario usuario = atual();
-    if (usuario.getPerfil() == Perfil.CLIENTE && !usuario.getId().equals(usuarioId)) {
-      throw new AccessDeniedException("Outro cliente");
-    }
+  public void exigirAnunciante(com.autoloca.back.model.Automovel carro) {
+    exigirAgente();
+    if (carro.getAnunciante() == null || !atual().getId().equals(carro.getAnunciante().getId()))
+      throw new AccessDeniedException("Este anúncio pertence a outro agente.");
+  }
+
+  public void exigirAcessoPedido(com.autoloca.back.model.Pedido pedido) {
+    Usuario u = atual();
+    if (u.getPerfil() == Perfil.CLIENTE) {
+      if (!u.getId().equals(pedido.getCliente().getUsuario().getId()))
+        throw new AccessDeniedException("Pedido de outro cliente.");
+    } else exigirAnunciante(pedido.getAutomovel());
+  }
+
+  public void exigirTitular(Long id) {
+    if (!atual().getId().equals(id))
+      throw new AccessDeniedException("Somente o titular pode alterar o cadastro.");
   }
 }

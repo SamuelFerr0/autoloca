@@ -117,4 +117,57 @@ public class Pedido {
   public void setCriadoEm(java.time.LocalDateTime criadoEm) {
     this.criadoEm = criadoEm;
   }
+
+  @Column(nullable = false, columnDefinition = "boolean default false")
+  private boolean solicitaCredito;
+
+  public boolean isSolicitaCredito() {
+    return solicitaCredito;
+  }
+
+  public void setSolicitaCredito(boolean solicitaCredito) {
+    this.solicitaCredito = solicitaCredito;
+  }
+
+  @Column(precision = 12, scale = 2)
+  private java.math.BigDecimal valorCreditoSolicitado;
+
+  public java.math.BigDecimal getValorCreditoSolicitado() {
+    return valorCreditoSolicitado;
+  }
+
+  public void setValorCreditoSolicitado(java.math.BigDecimal valorCreditoSolicitado) {
+    this.valorCreditoSolicitado = valorCreditoSolicitado;
+  }
+
+  private Integer parcelasSolicitadas;
+
+  public Integer getParcelasSolicitadas() {
+    return parcelasSolicitadas;
+  }
+
+  public void setParcelasSolicitadas(Integer parcelasSolicitadas) {
+    this.parcelasSolicitadas = parcelasSolicitadas;
+  }
+
+  @Column(precision = 12, scale = 2)
+  private java.math.BigDecimal valorCreditoAprovado;
+
+  public java.math.BigDecimal getValorCreditoAprovado() {
+    return valorCreditoAprovado;
+  }
+
+  public void setValorCreditoAprovado(java.math.BigDecimal valorCreditoAprovado) {
+    this.valorCreditoAprovado = valorCreditoAprovado;
+  }
+
+  private Integer parcelasAprovadas;
+
+  public Integer getParcelasAprovadas() {
+    return parcelasAprovadas;
+  }
+
+  public void setParcelasAprovadas(Integer parcelasAprovadas) {
+    this.parcelasAprovadas = parcelasAprovadas;
+  }
 }

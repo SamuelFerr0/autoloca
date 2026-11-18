@@ -13,6 +13,9 @@ export default function AgenteForm({ perfil, onSalvar }) {
         username: dados.get("username"),
         senha: dados.get("senha"),
         perfil,
+        cnpj: dados.get("cnpj"),
+        enderecoEmpresa: dados.get("enderecoEmpresa"),
+        representante: dados.get("representante"),
       }),
     );
   }
@@ -26,6 +29,9 @@ export default function AgenteForm({ perfil, onSalvar }) {
         maxLength={150}
         required
       />
+      <Campo label="CNPJ (14 números)" name="cnpj" pattern="[0-9]{14}" maxLength={14} required />
+      <Campo label="Endereço completo" name="enderecoEmpresa" maxLength={250} required />
+      <Campo label="Representante legal" name="representante" maxLength={150} required />
       <Campo
         label="Usuário"
         name="username"

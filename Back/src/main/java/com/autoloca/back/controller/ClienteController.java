@@ -1,8 +1,8 @@
 package com.autoloca.back.controller;
 
-import com.autoloca.back.service.*;
 import com.autoloca.back.dto.Dados;
 import com.autoloca.back.model.Cliente;
+import com.autoloca.back.service.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -27,13 +27,6 @@ public class ClienteController {
   @GetMapping("/{id}")
   public Cliente buscar(@PathVariable Long id) {
     return clienteService.buscar(id);
-  }
-
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public Cliente criar(@Valid @RequestBody Dados.Cadastro dados) {
-    usuarioService.exigirAgente();
-    return clienteService.cadastrar(dados);
   }
 
   @PutMapping("/{id}")

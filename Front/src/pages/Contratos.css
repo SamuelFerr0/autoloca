@@ -1,0 +1,45 @@
+.contract-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.documento-area {
+  margin-top: 32px;
+}
+.documento-contrato {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    15px/1.8 Georgia,
+    serif;
+  color: #17222d;
+  background: #fff;
+  border: 1px solid #dce1e5;
+  padding: clamp(20px, 5vw, 64px);
+  max-width: 850px;
+  margin: 24px auto;
+  box-shadow: 0 6px 28px #17222d0a;
+}
+.foto-veiculo {
+  margin: 0;
+}
+.foto-veiculo figcaption {
+  padding: 7px 12px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #66717a;
+  background: #f5f6f7;
+}
+.foto-veiculo figcaption a {
+  color: inherit;
+}
+.credit-box fieldset {
+  border: 0;
+}
+.credit-box legend {
+  font-weight: 700;
+}
+.company-profile {
+  max-width: 760px;
+}

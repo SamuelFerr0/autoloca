@@ -43,12 +43,12 @@ public class PedidoService {
     if (usuario.getPerfil() == Perfil.CLIENTE) {
       return pedidoRepository.findByClienteUsuarioIdOrderByIdDesc(usuario.getId());
     }
-    return pedidoRepository.findAllByOrderByIdDesc();
+    return pedidoRepository.findByAutomovelAnuncianteIdOrderByIdDesc(usuario.getId());
   }
 
   public Pedido buscar(Long id) {
     Pedido pedido = pedidoRepository.findById(id).orElseThrow();
-    usuarioService.exigirDonoOuAgente(pedido.getCliente().getUsuario().getId());
+    usuarioService.exigirAcessoPedido(pedido);
     return pedido;
   }
 
@@ -65,10 +65,14 @@ public class PedidoService {
 
   public Pedido editar(Long id, Dados.NovoPedido dados) {
     Pedido pedido = pedidoRepository.buscarComBloqueio(id).orElseThrow();
-    usuarioService.exigirDonoOuAgente(pedido.getCliente().getUsuario().getId());
+    usuarioService.exigirAcessoPedido(pedido);
     if (pedido.getStatus() != StatusPedido.EM_ANALISE
         && pedido.getStatus() != StatusPedido.APROVADO) {
       throw new RegraNegocioException("Este pedido não pode ser alterado.");
+    }
+    if (usuarioService.atual().getPerfil() != Perfil.CLIENTE) {
+      Automovel destino = automovelRepository.buscarComBloqueio(dados.automovelId()).orElseThrow();
+      usuarioService.exigirAnunciante(destino);
     }
     preencher(pedido, dados);
     return pedido;
@@ -77,7 +81,7 @@ public class PedidoService {
   public Pedido cancelar(Long id) {
     usuarioService.exigirCliente();
     Pedido pedido = pedidoRepository.buscarComBloqueio(id).orElseThrow();
-    usuarioService.exigirDonoOuAgente(pedido.getCliente().getUsuario().getId());
+    usuarioService.exigirAcessoPedido(pedido);
     if (pedido.getStatus() != StatusPedido.EM_ANALISE
         && pedido.getStatus() != StatusPedido.APROVADO) {
       throw new RegraNegocioException(
@@ -90,15 +94,29 @@ public class PedidoService {
   public Pedido avaliar(Long id, Dados.Avaliacao dados) {
     usuarioService.exigirAgente();
     Pedido pedido = pedidoRepository.buscarComBloqueio(id).orElseThrow();
+    usuarioService.exigirAnunciante(pedido.getAutomovel());
     if (pedido.getStatus() != StatusPedido.EM_ANALISE) {
       throw new RegraNegocioException("Somente pedidos em análise podem receber parecer.");
     }
     if (dados.aprovado()) {
       automovelRepository.buscarComBloqueio(pedido.getAutomovel().getId()).orElseThrow();
       verificarDisponibilidade(pedido);
+      if (pedido.isSolicitaCredito()) {
+        if (usuarioService.atual().getPerfil() != Perfil.BANCO
+            || dados.valorCreditoAprovado() == null
+            || dados.parcelasAprovadas() == null
+            || dados.valorCreditoAprovado().compareTo(pedido.getValorCreditoSolicitado()) > 0)
+          throw new RegraNegocioException(
+              "O banco anunciante deve confirmar valor e parcelas do crédito solicitado.");
+        pedido.setValorCreditoAprovado(dados.valorCreditoAprovado());
+        pedido.setParcelasAprovadas(dados.parcelasAprovadas());
+      } else if (dados.valorCreditoAprovado() != null || dados.parcelasAprovadas() != null)
+        throw new RegraNegocioException("O cliente não solicitou crédito neste pedido.");
       pedido.setStatus(StatusPedido.APROVADO);
     } else {
       pedido.setStatus(StatusPedido.REPROVADO);
+      pedido.setValorCreditoAprovado(null);
+      pedido.setParcelasAprovadas(null);
     }
     pedido.setParecer(dados.parecer().trim());
     pedido.setAgente(usuarioService.atual());
@@ -141,6 +159,24 @@ public class PedidoService {
     long quantidadeDiarias = ChronoUnit.DAYS.between(dados.inicio(), dados.fim());
     BigDecimal valorTotal = automovel.getDiaria().multiply(BigDecimal.valueOf(quantidadeDiarias));
     pedido.setValorTotal(valorTotal);
+    pedido.setSolicitaCredito(dados.solicitaCredito());
+    pedido.setValorCreditoAprovado(null);
+    pedido.setParcelasAprovadas(null);
+    if (dados.solicitaCredito()) {
+      if (automovel.getAnunciante() == null
+          || automovel.getAnunciante().getPerfil() != Perfil.BANCO)
+        throw new RegraNegocioException("Crédito está disponível somente em anúncios de bancos.");
+      if (dados.valorCreditoSolicitado() == null
+          || dados.parcelasSolicitadas() == null
+          || dados.valorCreditoSolicitado().compareTo(valorTotal) > 0)
+        throw new RegraNegocioException(
+            "Informe o valor do crédito, até o total do aluguel, e as parcelas.");
+      pedido.setValorCreditoSolicitado(dados.valorCreditoSolicitado());
+      pedido.setParcelasSolicitadas(dados.parcelasSolicitadas());
+    } else {
+      pedido.setValorCreditoSolicitado(null);
+      pedido.setParcelasSolicitadas(null);
+    }
     pedido.setStatus(StatusPedido.EM_ANALISE);
     pedido.setParecer(null);
     pedido.setAgente(null);

@@ -31,11 +31,15 @@ class AutomovelServiceTest {
   @InjectMocks private AutomovelService automovelService;
 
   private Dados.Carro dados() {
-    return new Dados.Carro("AUTO-TESTE", 2025, "Fiat", "Argo", "ABC1D23", new BigDecimal("150"), 1L);
+    return new Dados.Carro(
+        "AUTO-TESTE", 2025, "Fiat", "Argo", "ABC1D23", new BigDecimal("150"), 1L);
   }
 
   private void prepararProprietario() {
-    when(usuarioRepository.findById(1L)).thenReturn(Optional.of(new Usuario()));
+    Usuario agente = new Usuario();
+    agente.setId(9L);
+    agente.setPerfil(com.autoloca.back.model.Perfil.EMPRESA);
+    when(usuarioService.atual()).thenReturn(agente);
   }
 
   @Test
@@ -48,6 +52,9 @@ class AutomovelServiceTest {
 
     Automovel carro = automovelService.salvar(null, dados(), arquivo);
 
+    assertEquals(9L, carro.getAnunciante().getId());
+    assertSame(carro.getAnunciante(), carro.getProprietario());
+    verifyNoInteractions(usuarioRepository);
     assertTrue(carro.isTemFoto());
     assertEquals("image/png", carro.getFotoTipo());
     assertArrayEquals(bytes.toByteArray(), carro.getFoto());
@@ -55,7 +62,6 @@ class AutomovelServiceTest {
 
   @Test
   void editarSemArquivoMantemFotoAtual() {
-    prepararProprietario();
     Automovel carro = new Automovel();
     byte[] foto = {1, 2, 3};
     carro.setFoto(foto);
@@ -73,7 +79,8 @@ class AutomovelServiceTest {
   void rejeitaTextoDisfarcadoDeImagem() {
     prepararProprietario();
     var arquivo = new MockMultipartFile("foto", "carro.png", "image/png", "texto".getBytes());
-    assertThrows(RegraNegocioException.class, () -> automovelService.salvar(null, dados(), arquivo));
+    assertThrows(
+        RegraNegocioException.class, () -> automovelService.salvar(null, dados(), arquivo));
     verify(automovelRepository, never()).save(any());
   }
 
@@ -81,7 +88,8 @@ class AutomovelServiceTest {
   void rejeitaArquivoAcimaDeTresMegabytes() {
     prepararProprietario();
     var arquivo = new MockMultipartFile("foto", "carro.jpg", "image/jpeg", new byte[3145729]);
-    assertThrows(RegraNegocioException.class, () -> automovelService.salvar(null, dados(), arquivo));
+    assertThrows(
+        RegraNegocioException.class, () -> automovelService.salvar(null, dados(), arquivo));
     verify(automovelRepository, never()).save(any());
   }
 

@@ -48,6 +48,8 @@ class ClienteServiceTest {
   void naoExcluiClienteComPedidos() {
     Usuario usuario = new Usuario();
     usuario.setId(1L);
+    usuario.setPerfil(Perfil.CLIENTE);
+    when(usuarioService.atual()).thenReturn(usuario);
     Cliente cliente = new Cliente();
     cliente.setUsuario(usuario);
     when(clienteRepository.findById(2L)).thenReturn(Optional.of(cliente));
@@ -63,13 +65,15 @@ class ClienteServiceTest {
   void excluiClienteSemPedidos() {
     Usuario usuario = new Usuario();
     usuario.setId(1L);
+    usuario.setPerfil(Perfil.CLIENTE);
+    when(usuarioService.atual()).thenReturn(usuario);
     Cliente cliente = new Cliente();
     cliente.setUsuario(usuario);
     when(clienteRepository.findById(2L)).thenReturn(Optional.of(cliente));
 
     clienteService.excluir(2L);
 
-    verify(usuarioService).exigirDonoOuAgente(1L);
+    verify(usuarioService, atLeastOnce()).exigirTitular(1L);
     verify(clienteRepository).delete(cliente);
     verify(usuarioRepository).delete(usuario);
   }

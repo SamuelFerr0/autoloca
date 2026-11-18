@@ -86,23 +86,29 @@ class PedidoServiceTest {
   @Test
   void editarPedidoAprovadoExigeNovaAnalise() {
     pedido.setStatus(StatusPedido.APROVADO);
+    pedido.setValorCreditoAprovado(new BigDecimal("200"));
+    pedido.setParcelasAprovadas(2);
     pedido.setParecer("Aprovado");
     pedido.setAgente(new Usuario());
     when(pedidoRepository.buscarComBloqueio(3L)).thenReturn(Optional.of(pedido));
     when(automovelRepository.buscarComBloqueio(2L)).thenReturn(Optional.of(automovel));
 
+    when(usuarioService.atual()).thenReturn(usuario);
     pedidoService.editar(3L, new Dados.NovoPedido(2L, inicio, inicio.plusDays(4)));
 
     assertEquals(StatusPedido.EM_ANALISE, pedido.getStatus());
     assertEquals(new BigDecimal("400.00"), pedido.getValorTotal());
     assertNull(pedido.getParecer());
     assertNull(pedido.getAgente());
-    verify(usuarioService).exigirDonoOuAgente(1L);
+    assertNull(pedido.getValorCreditoAprovado());
+    assertNull(pedido.getParcelasAprovadas());
+    verify(usuarioService).exigirAcessoPedido(pedido);
   }
 
   @Test
   void rejeitaDevolucaoAntesDaRetirada() {
     when(pedidoRepository.buscarComBloqueio(3L)).thenReturn(Optional.of(pedido));
+    when(usuarioService.atual()).thenReturn(usuario);
     Dados.NovoPedido dados = new Dados.NovoPedido(2L, inicio, inicio.minusDays(1));
 
     assertThrows(RegraNegocioException.class, () -> pedidoService.editar(3L, dados));
@@ -112,6 +118,7 @@ class PedidoServiceTest {
   @Test
   void rejeitaRetiradaNoPassado() {
     when(pedidoRepository.buscarComBloqueio(3L)).thenReturn(Optional.of(pedido));
+    when(usuarioService.atual()).thenReturn(usuario);
     Dados.NovoPedido dados = new Dados.NovoPedido(2L, LocalDate.now().minusDays(1), inicio);
 
     assertThrows(RegraNegocioException.class, () -> pedidoService.editar(3L, dados));
@@ -168,7 +175,7 @@ class PedidoServiceTest {
 
     assertEquals(StatusPedido.CANCELADO, pedido.getStatus());
     verify(usuarioService).exigirCliente();
-    verify(usuarioService).exigirDonoOuAgente(1L);
+    verify(usuarioService).exigirAcessoPedido(pedido);
   }
 
   @Test
@@ -178,5 +185,78 @@ class PedidoServiceTest {
 
     assertThrows(RegraNegocioException.class, () -> pedidoService.cancelar(3L));
     assertEquals(StatusPedido.CONTRATADO, pedido.getStatus());
+  }
+
+  private void prepararEdicaoCredito(Perfil perfil) {
+    when(usuarioService.atual()).thenReturn(usuario);
+    Usuario agente = new Usuario();
+    agente.setId(8L);
+    agente.setPerfil(perfil);
+    automovel.setAnunciante(agente);
+    when(pedidoRepository.buscarComBloqueio(3L)).thenReturn(Optional.of(pedido));
+    when(automovelRepository.buscarComBloqueio(2L)).thenReturn(Optional.of(automovel));
+  }
+
+  @Test
+  void aceitaSolicitacaoDeCreditoEmCarroDeBanco() {
+    prepararEdicaoCredito(Perfil.BANCO);
+    pedidoService.editar(
+        3L, new Dados.NovoPedido(2L, inicio, inicio.plusDays(3), true, new BigDecimal("250"), 3));
+    assertTrue(pedido.isSolicitaCredito());
+    assertEquals(new BigDecimal("250"), pedido.getValorCreditoSolicitado());
+    assertNull(pedido.getValorCreditoAprovado());
+  }
+
+  @Test
+  void empresaNaoOfereceCredito() {
+    prepararEdicaoCredito(Perfil.EMPRESA);
+    assertThrows(
+        RegraNegocioException.class,
+        () ->
+            pedidoService.editar(
+                3L,
+                new Dados.NovoPedido(
+                    2L, inicio, inicio.plusDays(3), true, new BigDecimal("250"), 3)));
+  }
+
+  @Test
+  void creditoSolicitadoNaoSuperaAluguel() {
+    prepararEdicaoCredito(Perfil.BANCO);
+    assertThrows(
+        RegraNegocioException.class,
+        () ->
+            pedidoService.editar(
+                3L,
+                new Dados.NovoPedido(
+                    2L, inicio, inicio.plusDays(3), true, new BigDecimal("301"), 3)));
+  }
+
+  @Test
+  void bancoPrecisaAprovarCondicoesDoCredito() {
+    pedido.setSolicitaCredito(true);
+    pedido.setValorCreditoSolicitado(new BigDecimal("250"));
+    usuario.setPerfil(Perfil.BANCO);
+    when(usuarioService.atual()).thenReturn(usuario);
+    when(pedidoRepository.buscarComBloqueio(3L)).thenReturn(Optional.of(pedido));
+    when(automovelRepository.buscarComBloqueio(2L)).thenReturn(Optional.of(automovel));
+    assertThrows(
+        RegraNegocioException.class,
+        () -> pedidoService.avaliar(3L, new Dados.Avaliacao(true, "Renda analisada")));
+    assertEquals(StatusPedido.EM_ANALISE, pedido.getStatus());
+    pedidoService.avaliar(
+        3L, new Dados.Avaliacao(true, "Renda analisada", new BigDecimal("200"), 2));
+    assertEquals(new BigDecimal("200"), pedido.getValorCreditoAprovado());
+    assertEquals(2, pedido.getParcelasAprovadas());
+  }
+
+  @Test
+  void naoConcedeCreditoQueClienteNaoPediu() {
+    when(pedidoRepository.buscarComBloqueio(3L)).thenReturn(Optional.of(pedido));
+    when(automovelRepository.buscarComBloqueio(2L)).thenReturn(Optional.of(automovel));
+    assertThrows(
+        RegraNegocioException.class,
+        () ->
+            pedidoService.avaliar(
+                3L, new Dados.Avaliacao(true, "Analisado", new BigDecimal("200"), 2)));
   }
 }

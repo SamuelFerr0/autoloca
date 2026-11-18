@@ -7,4 +7,8 @@ public interface ContratoRepository extends JpaRepository<Contrato, Long> {
   java.util.List<Contrato> findByPedidoClienteUsuarioIdOrderByIdDesc(Long id);
 
   java.util.List<Contrato> findAllByOrderByIdDesc();
+
+  java.util.List<Contrato> findByPedidoAutomovelAnuncianteIdOrderByIdDesc(Long id);
+
+  java.util.List<Contrato> findByDocumentoIsNull();
 }

@@ -61,23 +61,53 @@ public class ClienteService {
       Cliente cliente = clienteRepository.findByUsuarioId(usuario.getId()).orElseThrow();
       return List.of(cliente);
     }
-    return clienteRepository.findAll();
+    return clienteRepository.findRelacionadosAoAgente(usuario.getId());
   }
 
   public Cliente buscar(Long id) {
     Cliente cliente = clienteRepository.findById(id).orElseThrow();
-    usuarioService.exigirDonoOuAgente(cliente.getUsuario().getId());
+    Usuario atual = usuarioService.atual();
+    if (atual.getPerfil() == Perfil.CLIENTE)
+      usuarioService.exigirTitular(cliente.getUsuario().getId());
+    else if (!pedidoRepository.existsByClienteIdAndAutomovelAnuncianteId(id, atual.getId()))
+      throw new org.springframework.security.access.AccessDeniedException(
+          "Cliente sem pedido relacionado ao agente.");
     return cliente;
   }
 
   public Cliente atualizar(Long id, Dados.PerfilCliente dados) {
     Cliente cliente = buscar(id);
+    usuarioService.exigirTitular(cliente.getUsuario().getId());
+    var rendaAtual =
+        cliente.getRendimentos().stream()
+            .map(
+                r ->
+                    r.getEmpregador().trim()
+                        + ":"
+                        + r.getValor().stripTrailingZeros().toPlainString())
+            .sorted()
+            .toList();
+    var rendaNova =
+        dados.rendimentos().stream()
+            .map(r -> r.empregador().trim() + ":" + r.valor().stripTrailingZeros().toPlainString())
+            .sorted()
+            .toList();
+    if (!rendaAtual.equals(rendaNova)) {
+      for (var pedido : pedidoRepository.buscarAprovadosDoCliente(id)) {
+        pedido.setStatus(com.autoloca.back.model.StatusPedido.EM_ANALISE);
+        pedido.setParecer(null);
+        pedido.setAgente(null);
+        pedido.setValorCreditoAprovado(null);
+        pedido.setParcelasAprovadas(null);
+      }
+    }
     preencher(cliente, dados);
     return clienteRepository.save(cliente);
   }
 
   public void excluir(Long id) {
     Cliente cliente = buscar(id);
+    usuarioService.exigirTitular(cliente.getUsuario().getId());
     if (pedidoRepository.existsByClienteId(id)) {
       throw new RegraNegocioException("Cliente possui pedidos. O histórico deve ser preservado.");
     }

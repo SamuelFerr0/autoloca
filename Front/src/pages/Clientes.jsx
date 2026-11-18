@@ -1,6 +1,6 @@
 import { useAcao } from "../hooks/useAcao";
 import { useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useDados } from "../hooks/useDados";
 import { Modal, Message, Empty } from "../components/UI";
@@ -39,14 +39,12 @@ export default function Clientes() {
       <div className="page-heading">
         <div>
           <h1>{agente ? "Clientes" : "Meu cadastro"}</h1>
-          <p>Dados pessoais e rendimentos para a análise do aluguel.</p>
+          <p>
+            {agente
+              ? "Consulte apenas clientes com pedidos nos seus anúncios."
+              : "Dados pessoais e rendimentos para a análise do aluguel. Alterar a renda exige nova análise dos pedidos aprovados."}
+          </p>
         </div>
-        {agente && (
-          <button className="button" onClick={() => setModal({ novo: true })}>
-            <Plus size={18} />
-            Novo cliente
-          </button>
-        )}
       </div>
       <Message erro={erro || acao.erro} sucesso={sucesso} />
       {agente && (
@@ -77,9 +75,11 @@ export default function Clientes() {
                     @{c.usuario.username} · {c.profissao}
                   </p>
                 </div>
-                <button className="button secondary small" onClick={() => setModal({ cliente: c })}>
-                  Editar cadastro
-                </button>
+                {!agente && (
+                  <button className="button secondary small" onClick={() => setModal({ cliente: c })}>
+                    Editar cadastro
+                  </button>
+                )}
               </div>
               <dl className="details-grid">
                 <div>
@@ -109,9 +109,11 @@ export default function Clientes() {
                   ))}
                 </div>
               )}
-              <button className="text-button danger" disabled={acao.busy} onClick={() => excluirCliente(c)}>
-                Excluir cadastro
-              </button>
+              {!agente && (
+                <button className="text-button danger" disabled={acao.busy} onClick={() => excluirCliente(c)}>
+                  Excluir cadastro
+                </button>
+              )}
             </section>
           ))
       )}

@@ -62,4 +62,37 @@ public class Usuario {
   public void setPerfil(Perfil perfil) {
     this.perfil = perfil;
   }
+
+  @Column(length = 14)
+  private String cnpj;
+
+  public String getCnpj() {
+    return cnpj;
+  }
+
+  public void setCnpj(String cnpj) {
+    this.cnpj = cnpj;
+  }
+
+  @Column(length = 250)
+  private String enderecoEmpresa;
+
+  public String getEnderecoEmpresa() {
+    return enderecoEmpresa;
+  }
+
+  public void setEnderecoEmpresa(String enderecoEmpresa) {
+    this.enderecoEmpresa = enderecoEmpresa;
+  }
+
+  @Column(length = 150)
+  private String representante;
+
+  public String getRepresentante() {
+    return representante;
+  }
+
+  public void setRepresentante(String representante) {
+    this.representante = representante;
+  }
 }

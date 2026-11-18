@@ -1,6 +1,6 @@
 import { useAcao } from "../hooks/useAcao";
 import { useState } from "react";
-import { Submit, Message } from "./UI";
+import { Campo, Submit, Message } from "./UI";
 import { avaliarPedido } from "../services/aluguelService";
 import { moeda } from "../utils/formatar";
 export default function AvaliacaoForm({ pedido, onSalvo }) {
@@ -14,7 +14,14 @@ export default function AvaliacaoForm({ pedido, onSalvo }) {
         e.preventDefault();
         const f = new FormData(e.currentTarget);
         executar(async () => {
-          await avaliarPedido(pedido.id, { aprovado: aprovado === "true", parecer: f.get("parecer") });
+          await avaliarPedido(pedido.id, {
+            aprovado: aprovado === "true",
+            parecer: f.get("parecer"),
+            valorCreditoAprovado:
+              pedido.solicitaCredito && aprovado === "true" ? Number(f.get("valorCreditoAprovado")) : null,
+            parcelasAprovadas:
+              pedido.solicitaCredito && aprovado === "true" ? Number(f.get("parcelasAprovadas")) : null,
+          });
           onSalvo();
         });
       }}
@@ -43,6 +50,38 @@ export default function AvaliacaoForm({ pedido, onSalvo }) {
           <option value="false">Reprovar pedido</option>
         </select>
       </label>
+      {pedido.solicitaCredito && (
+        <div className="credit-box">
+          <strong>
+            Crédito solicitado: {moeda(pedido.valorCreditoSolicitado)} em {pedido.parcelasSolicitadas}{" "}
+            parcelas
+          </strong>
+          {aprovado === "true" && (
+            <div className="form-grid">
+              <Campo
+                label="Crédito aprovado (R$)"
+                name="valorCreditoAprovado"
+                type="number"
+                min="0.01"
+                step="0.01"
+                max={pedido.valorCreditoSolicitado}
+                defaultValue={pedido.valorCreditoSolicitado}
+                required
+              />
+              <Campo
+                label="Parcelas aprovadas"
+                name="parcelasAprovadas"
+                type="number"
+                min="1"
+                max="60"
+                defaultValue={pedido.parcelasSolicitadas}
+                required
+              />
+            </div>
+          )}
+          <p>Essas condições serão copiadas para o contrato após a aprovação.</p>
+        </div>
+      )}
       <label className="field">
         Parecer financeiro
         <textarea

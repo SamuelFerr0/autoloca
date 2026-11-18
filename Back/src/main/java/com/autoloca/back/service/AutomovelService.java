@@ -1,17 +1,17 @@
 package com.autoloca.back.service;
 
 import com.autoloca.back.dto.Dados;
+import com.autoloca.back.exception.RegraNegocioException;
 import com.autoloca.back.model.Automovel;
 import com.autoloca.back.model.Usuario;
 import com.autoloca.back.repository.AutomovelRepository;
 import com.autoloca.back.repository.UsuarioRepository;
-import java.util.List;
 import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
-import com.autoloca.back.exception.RegraNegocioException;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -30,7 +30,10 @@ public class AutomovelService {
   }
 
   public List<Automovel> listar() {
-    return automovelRepository.findAll();
+    Usuario usuario = usuarioService.atual();
+    return usuario.getPerfil() == com.autoloca.back.model.Perfil.CLIENTE
+        ? automovelRepository.findAll()
+        : automovelRepository.findByAnuncianteIdOrderByIdDesc(usuario.getId());
   }
 
   public Automovel salvar(Long id, Dados.Carro dados) {
@@ -42,24 +45,28 @@ public class AutomovelService {
     Automovel automovel;
     if (id == null) {
       automovel = new Automovel();
+      automovel.setAnunciante(usuarioService.atual());
+      automovel.setProprietario(usuarioService.atual());
     } else {
       automovel = automovelRepository.buscarComBloqueio(id).orElseThrow();
+      usuarioService.exigirAnunciante(automovel);
     }
 
-    Usuario proprietario = usuarioRepository.findById(dados.proprietarioId()).orElseThrow();
     automovel.setMatricula(dados.matricula().trim());
     automovel.setAno(dados.ano());
     automovel.setMarca(dados.marca().trim());
     automovel.setModelo(dados.modelo().trim());
     automovel.setPlaca(dados.placa());
     automovel.setDiaria(dados.diaria());
-    automovel.setProprietario(proprietario);
     if (foto != null && !foto.isEmpty()) atualizarFoto(automovel, foto);
     return automovelRepository.save(automovel);
   }
 
   public Automovel buscar(Long id) {
-    return automovelRepository.findById(id).orElseThrow();
+    Automovel carro = automovelRepository.findById(id).orElseThrow();
+    if (usuarioService.atual().getPerfil() != com.autoloca.back.model.Perfil.CLIENTE)
+      usuarioService.exigirAnunciante(carro);
+    return carro;
   }
 
   private void atualizarFoto(Automovel carro, MultipartFile arquivo) {
@@ -68,7 +75,8 @@ public class AutomovelService {
     }
     try (var entrada = ImageIO.createImageInputStream(arquivo.getInputStream())) {
       var leitores = ImageIO.getImageReaders(entrada);
-      if (!leitores.hasNext()) throw new RegraNegocioException("Selecione uma foto JPG ou PNG válida.");
+      if (!leitores.hasNext())
+        throw new RegraNegocioException("Selecione uma foto JPG ou PNG válida.");
       var leitor = leitores.next();
       try {
         leitor.setInput(entrada);
@@ -93,11 +101,12 @@ public class AutomovelService {
   public void excluir(Long id) {
     usuarioService.exigirAgente();
     Automovel automovel = automovelRepository.findById(id).orElseThrow();
+    usuarioService.exigirAnunciante(automovel);
     automovelRepository.delete(automovel);
   }
 
   public List<Usuario> proprietarios() {
     usuarioService.exigirAgente();
-    return usuarioRepository.findAll();
+    return java.util.List.of(usuarioService.atual());
   }
 }
