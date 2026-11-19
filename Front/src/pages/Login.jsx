@@ -5,7 +5,15 @@ import { useAuth } from "../hooks/useAuth";
 import { Campo, Submit, Message } from "../components/UI";
 import AgenteForm from "../components/AgenteForm";
 import ClienteForm from "../components/ClienteForm";
-import FotoCarro from "../components/FotoCarro";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  CarFront,
+  CalendarDays,
+  FileCheck2,
+  ChevronDown,
+  Building2,
+} from "lucide-react";
 import "./Login.css";
 import { requisicao } from "../services/httpClient";
 export default function Login() {
@@ -25,121 +33,200 @@ export default function Login() {
       <header className="public-header">
         <a href="#inicio" className="public-brand">
           <img src="/logo.png" alt="" />
-          AutoLoca<span>ALUGUEL DE CARROS</span>
+          <span>
+            AutoLoca<small>ALUGUEL DE CARROS</small>
+          </span>
         </a>
         <nav aria-label="Navegação pública">
           <a href="#sobre">Sobre</a>
+          <a href="#como-funciona">Como funciona</a>
           <a href="#duvidas">Dúvidas</a>
-          <a href="#entrar" className="button">
-            Entrar na minha conta →
-          </a>
         </nav>
+        <a href="#entrar" className="button public-enter">
+          Minha conta <ArrowUpRight size={17} aria-hidden="true" />
+        </a>
       </header>
-      <section className="public-hero" id="inicio">
+      <section className="public-hero" id="inicio" aria-labelledby="titulo-inicio">
         <div className="public-hero-copy">
-          <span className="hero-kicker">Para cada plano, um caminho.</span>
-          <h1>
-            O destino é seu.
-            <br />O carro está aqui.
+          <span className="hero-kicker">UM CARRO. MUITAS POSSIBILIDADES.</span>
+          <h1 id="titulo-inicio">
+            Seu próximo
+            <br />
+            caminho
+            <br />
+            <em>começa aqui.</em>
           </h1>
-          <p>Compare modelos, planeje o período e acompanhe seu pedido de aluguel do começo ao contrato.</p>
-          <a href="#entrar" className="button">
-            Encontrar meu próximo carro →
+          <p>Para a rotina ou para sair dela. Encontre o carro que combina com os seus planos.</p>
+          <a href="#entrar" className="button public-primary">
+            Escolher meu carro <ArrowUpRight size={20} aria-hidden="true" />
           </a>
-          <a className="public-secondary" href="#sobre">
-            Conheça a AutoLoca ↓
-          </a>
+          <p className="public-hero-note">Entre ou crie sua conta para conhecer a frota.</p>
         </div>
-        <div className="public-hero-photo">
-          <FotoCarro carro={{ marca: "Toyota", modelo: "Corolla", temFoto: false }} />
-          <span className="public-photo-label">DA ROTINA À PRÓXIMA VIAGEM</span>
+        <figure className="public-hero-photo">
+          <img
+            src="/imagens/carro-floresta.jpg"
+            alt="Carro prata visto de lado em uma estrada de floresta, sem placa visível"
+            width="1400"
+            height="933"
+            fetchPriority="high"
+          />
+          <figcaption>
+            <span>Para onde vamos hoje?</span>
+            <a href="/carros/creditos.html">Imagem ilustrativa · créditos</a>
+          </figcaption>
+        </figure>
+      </section>
+      <div className="public-benefits" aria-label="Recursos do aluguel">
+        <span>
+          <CarFront size={21} aria-hidden="true" />
+          Compare modelos e diárias
+        </span>
+        <span>
+          <CalendarDays size={21} aria-hidden="true" />
+          Escolha seu período
+        </span>
+        <span>
+          <FileCheck2 size={21} aria-hidden="true" />
+          Acompanhe até o contrato
+        </span>
+      </div>
+      <section id="sobre" className="public-about" aria-labelledby="titulo-sobre">
+        <figure className="public-about-photo">
+          <img
+            src="/imagens/estrada-floresta.jpg"
+            alt="Carro percorrendo uma curva em uma estrada arborizada"
+            width="1400"
+            height="933"
+            loading="lazy"
+          />
+          <figcaption>O caminho também faz parte da viagem.</figcaption>
+        </figure>
+        <div className="public-about-copy">
+          <span className="hero-kicker">SOBRE A AUTOLOCA</span>
+          <h2 id="titulo-sobre">
+            O carro certo.
+            <br />
+            Para os <em>seus planos.</em>
+          </h2>
+          <p>A AutoLoca conecta quem precisa de um carro a empresas e bancos que anunciam seus veículos.</p>
+          <p>
+            Compare as diárias, escolha o período e envie seu pedido. Você acompanha a análise e acessa o
+            contrato em um só lugar.
+          </p>
+          <a href="#como-funciona" className="public-text-link">
+            Veja como alugar <ArrowRight size={18} aria-hidden="true" />
+          </a>
         </div>
       </section>
-      <section id="sobre" className="public-about">
-        <div>
-          <span className="hero-kicker">Sobre a AutoLoca</span>
-          <h2>
-            Menos etapas.
+      <section id="como-funciona" className="public-how" aria-labelledby="titulo-etapas">
+        <div className="public-section-heading">
+          <div>
+            <span className="hero-kicker">DO PLANO À ESTRADA</span>
+            <h2 id="titulo-etapas">Seu aluguel, passo a passo.</h2>
+          </div>
+          <p>
+            Você escolhe. O anunciante analisa.
             <br />
-            Mais estrada.
-          </h2>
-          <p>
-            Um espaço para conectar quem precisa de um carro a empresas e bancos que anunciam seus veículos.
-          </p>
-          <p>
-            Você escolhe o modelo e as datas. O anunciante analisa o pedido e emite o contrato com todas as
-            informações do aluguel.
+            Tudo fica registrado na sua conta.
           </p>
         </div>
         <div className="public-steps">
           <article>
-            <b>01</b>
-            <div>
-              <h3>Encontre seu carro</h3>
-              <p>Veja fotos, anunciante e valor da diária antes de escolher.</p>
+            <div className="public-step-top">
+              <span>01</span>
+              <CarFront size={28} aria-hidden="true" />
             </div>
+            <h3>Encontre seu carro</h3>
+            <p>Consulte as fotos, confira o anunciante e compare o valor das diárias.</p>
           </article>
           <article>
-            <b>02</b>
-            <div>
-              <h3>Planeje os dias</h3>
-              <p>Informe retirada e devolução e confira o valor do período.</p>
+            <div className="public-step-top">
+              <span>02</span>
+              <CalendarDays size={28} aria-hidden="true" />
             </div>
+            <h3>Marque os dias</h3>
+            <p>Informe retirada e devolução. Confira o total antes de enviar o pedido.</p>
           </article>
           <article>
-            <b>03</b>
-            <div>
-              <h3>Acompanhe a aprovação</h3>
-              <p>Consulte o parecer do anunciante e baixe o contrato quando emitido.</p>
+            <div className="public-step-top">
+              <span>03</span>
+              <FileCheck2 size={28} aria-hidden="true" />
             </div>
+            <h3>Acompanhe o pedido</h3>
+            <p>Consulte o parecer do anunciante e baixe o contrato quando ele for emitido.</p>
           </article>
         </div>
       </section>
-      <section id="duvidas" className="public-faq">
-        <div>
-          <span className="hero-kicker">Antes de partir</span>
-          <h2>Alguma dúvida?</h2>
-          <p>Veja como funcionam os pedidos e o crédito.</p>
+      <section id="duvidas" className="public-faq" aria-labelledby="titulo-duvidas">
+        <div className="public-faq-intro">
+          <span className="hero-kicker">ANTES DE PARTIR</span>
+          <h2 id="titulo-duvidas">
+            Bom saber
+            <br />
+            <em>antes de alugar.</em>
+          </h2>
+          <p>As respostas para você começar com tudo esclarecido.</p>
+          <a href="#entrar" className="public-text-link">
+            Acessar minha conta <ArrowRight size={18} aria-hidden="true" />
+          </a>
         </div>
-        <div>
+        <div className="public-faq-list">
           <details>
-            <summary>Preciso de uma conta para alugar?</summary>
+            <summary>
+              Preciso de uma conta para alugar?
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
             <p>
               Sim. Cadastre-se como cliente e informe seus dados e rendimentos. Depois de entrar, você poderá
               consultar a frota e enviar um pedido.
             </p>
           </details>
           <details>
-            <summary>Como o valor do aluguel é calculado?</summary>
+            <summary>
+              Como o valor do aluguel é calculado?
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
             <p>
               Multiplicamos a diária pelo número de dias entre retirada e devolução. A data de devolução não
               conta como uma diária adicional.
             </p>
           </details>
           <details>
-            <summary>Quando posso solicitar crédito?</summary>
+            <summary>
+              Quando posso solicitar crédito?
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
             <p>
               Nos anúncios de bancos, você pode solicitar crédito e informar o valor e as parcelas. O próprio
               banco precisa analisar e aprovar as condições antes da emissão do contrato.
             </p>
           </details>
           <details>
-            <summary>Posso alterar ou cancelar meu pedido?</summary>
+            <summary>
+              Posso alterar ou cancelar meu pedido?
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
             <p>
               Enquanto estiver em análise ou aprovado, você pode modificar ou cancelar. Uma alteração exige
               nova análise. Depois da contratação, o documento emitido é preservado.
             </p>
           </details>
           <details>
-            <summary>As fotos são do carro anunciado?</summary>
+            <summary>
+              As fotos são do carro anunciado?
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
             <p>
               A foto enviada pelo anunciante tem prioridade. Quando não há uma foto enviada, mostramos uma
-              imagem ilustrativa do modelo e seus créditos. Confira os dados do anúncio e as condições com o
-              anunciante.
+              imagem ilustrativa do modelo e seus créditos. As imagens desta página são de apresentação e não
+              representam anúncios disponíveis.
             </p>
           </details>
           <details>
-            <summary>Onde encontro meu contrato?</summary>
+            <summary>
+              Onde encontro meu contrato?
+              <ChevronDown size={18} aria-hidden="true" />
+            </summary>
             <p>
               Após a emissão pelo anunciante, abra Contratos para ler e baixar o PDF. O documento traz os
               dados das partes, do veículo, os valores e os campos para assinatura. A emissão não representa
@@ -148,22 +235,26 @@ export default function Login() {
           </details>
         </div>
       </section>
-      <section className="public-access" id="entrar">
+      <section className="public-access" id="entrar" aria-labelledby="titulo-acesso">
         <div className="access-copy">
-          <span className="hero-kicker">Vamos começar?</span>
-          <h2>
-            Seu próximo caminho
+          <span className="hero-kicker">VAMOS COMEÇAR?</span>
+          <h2 id="titulo-acesso">
+            Mais perto
             <br />
-            começa aqui.
+            do seu próximo
+            <br />
+            <em>destino.</em>
           </h2>
-          <p>Entre para consultar os carros e acompanhar seus pedidos.</p>
-          <p>
-            Tem uma empresa ou um banco? Crie uma conta de anunciante para gerenciar seus próprios veículos.
-          </p>
+          <p>Entre para conhecer os carros e acompanhar seus aluguéis.</p>
+          <div className="public-agent-note">
+            <Building2 size={22} aria-hidden="true" />
+            <p>
+              Tem uma empresa ou um banco? Crie sua conta de anunciante para gerenciar seus próprios veículos.
+            </p>
+          </div>
         </div>
         <section className="login-form">
           <div className={cadastro ? "auth-box wide" : "auth-box"}>
-            <h1>AutoLoca</h1>
             <h2>{cadastro ? "Criar conta" : "Login"}</h2>
             <p className="muted">
               {cadastro ? "Preencha os dados para criar sua conta." : "Informe seu usuário e senha."}
@@ -242,11 +333,17 @@ export default function Login() {
           </div>
         </section>
       </section>
-      <div className="public-footer">
-        <strong>AutoLoca</strong>
-        <span>Projeto acadêmico · DIAW</span>
-        <a href="/carros/creditos.html">Créditos das imagens</a>
-      </div>
+      <footer className="public-footer">
+        <a href="#inicio" className="public-footer-brand">
+          AutoLoca<span>Um carro para cada caminho.</span>
+        </a>
+        <nav aria-label="Links do rodapé">
+          <a href="#sobre">Sobre</a>
+          <a href="#duvidas">Dúvidas</a>
+          <a href="/carros/creditos.html">Créditos das imagens</a>
+        </nav>
+        <p>Projeto acadêmico · DIAW</p>
+      </footer>
     </main>
   );
 }

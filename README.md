@@ -95,7 +95,7 @@ Após entrar como agente, complete CNPJ, endereço e representante em **Minha em
 
 As contas e os carros devem ser cadastrados pela interface. O backend valida o esquema do Supabase, sem criar as tabelas automaticamente.
 
-Fotos enviadas e PDFs ficam no próprio PostgreSQL (campos `bytea`), sem bucket do Supabase Storage. As imagens ilustrativas são consultadas nas APIs da Wikipédia/Wikimedia Commons, com autor e licença exibidos. Sem resposta da API, os modelos de demonstração usam as imagens locais; para outros modelos, envie uma foto no cadastro.
+Fotos enviadas e PDFs ficam no próprio PostgreSQL (campos `bytea`), sem bucket do Supabase Storage. As imagens ilustrativas do catálogo são consultadas nas APIs da Wikipédia/Wikimedia Commons, com autor e licença exibidos. As fotos de apresentação da página pública são arquivos locais do Pexels, com fontes em Créditos das imagens. Sem resposta da API, os modelos de demonstração usam as imagens locais; para outros modelos, envie uma foto no cadastro.
 
 ### Como Executar a Aplicação
 
@@ -158,6 +158,8 @@ AutoLoca/
 ```
 
 ## 🎥 Demonstração
+
+![Página inicial](docs/imgs/inicio.png)
 
 | Frota | Pedidos |
 | --- | --- |
